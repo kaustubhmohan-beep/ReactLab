@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ReactLab — Named Reactions Explorer</title>
+  <meta name="description" content="An interactive educational tool to explore named chemical reactions, their step-by-step mechanisms, 3D molecular models, and effects of temperature and pressure." />
+  <meta name="keywords" content="chemistry, named reactions, mechanism, organic chemistry, Aldol condensation, Diels-Alder, Grignard, Friedel-Crafts, SN2" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Orbitron:wght@700;900&family=Fira+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <!-- Three.js CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+
+  <!-- App CSS -->
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- Animated background orbs -->
+  <div class="bg-anim" aria-hidden="true"></div>
+  <div class="orb-mid" aria-hidden="true"></div>
+
+  <div class="site-wrapper">
+
+    <!-- ==================== NAVBAR ==================== -->
+    <nav role="navigation" aria-label="Main navigation">
+      <div class="nav-inner">
+        <a href="#" class="nav-logo" onclick="showHome(); return false;" aria-label="ReactLab Home">⚗ ReactLab</a>
+        <ul class="nav-links" id="nav-links">
+          <li><a href="#" onclick="showHome(); return false;">Reactions</a></li>
+          <li><a href="#" onclick="showCompare(); return false;">Compare</a></li>
+          <li><a href="#about-section" onclick="closeMobileMenu()">About</a></li>
+          <li><a href="#how-to-use" onclick="closeMobileMenu()">How To Use</a></li>
+        </ul>
+        <button class="hamburger" id="hamburger-btn" aria-label="Toggle mobile menu" onclick="toggleMobileMenu()">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </nav>
+
+    <!-- ==================== HOME PAGE ==================== -->
+    <div id="home-page">
+
+      <!-- HERO -->
+      <!-- Announcement Banner -->
+      <div class="announcement-banner" id="announcement-banner">
+        <span class="banner-icon">🧪</span>
+        <span>New: Over <strong>100+ named reactions</strong> with 3D molecular models and interactive condition simulators</span>
+        <button class="banner-close" onclick="document.getElementById('announcement-banner').style.display='none'" aria-label="Close banner">✕</button>
+      </div>
+
+      <header class="hero" role="banner">
+        <div class="hero-badge">⚗ Interactive Chemistry Lab</div>
+        <h1>Explore Named<br>Chemical Reactions</h1>
+        <p>Dive deep into mechanism steps, interact with 3D molecular models, and discover how temperature, pressure &amp; concentration affect each reaction.</p>
+        <a href="#reactions-section" class="hero-cta">🔬 Explore Reactions</a>
+        <div class="hero-stats" aria-label="Statistics">
+          <div class="hero-stat">
+            <div class="hero-stat-num">100+</div>
+            <div class="hero-stat-label">Named Reactions</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-num">3D</div>
+            <div class="hero-stat-label">Molecular Models</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-num">∞</div>
+            <div class="hero-stat-label">Condition Simulations</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-num">7</div>
+            <div class="hero-stat-label">Reaction Categories</div>
+          </div>
+        </div>
+      </header>
+
+      <!-- HOW TO USE -->
+      <section class="section" id="how-to-use" aria-labelledby="howto-heading">
+        <div class="section-header fade-in">
+          <div class="section-title" id="howto-heading">How To Use This Site</div>
+          <div class="section-sub">Follow these steps to get the most out of ReactLab.</div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;">
+          <div class="glass-panel fade-in" style="margin:0">
+            <div style="font-size:2rem;margin-bottom:12px;">🔍</div>
+            <div style="font-weight:700;margin-bottom:8px;font-size:1rem;">1. Search & Filter</div>
+            <div style="color:var(--text-secondary);font-size:0.88rem;">Use the search bar or category chips to find the reaction you want to study.</div>
+          </div>
+          <div class="glass-panel fade-in" style="margin:0">
+            <div style="font-size:2rem;margin-bottom:12px;">⚗</div>
+            <div style="font-weight:700;margin-bottom:8px;font-size:1rem;">2. Study the Mechanism</div>
+            <div style="color:var(--text-secondary);font-size:0.88rem;">Click each mechanism step to follow the reaction pathway. The 3D viewer updates as you progress.</div>
+          </div>
+          <div class="glass-panel fade-in" style="margin:0">
+            <div style="font-size:2rem;margin-bottom:12px;">🌡</div>
+            <div style="font-weight:700;margin-bottom:8px;font-size:1rem;">3. Adjust Conditions</div>
+            <div style="color:var(--text-secondary);font-size:0.88rem;">Move the temperature, pressure or concentration sliders to see how reaction outcomes change.</div>
+          </div>
+          <div class="glass-panel fade-in" style="margin:0">
+            <div style="font-size:2rem;margin-bottom:12px;">🔬</div>
+            <div style="font-weight:700;margin-bottom:8px;font-size:1rem;">4. View 3D Molecules</div>
+            <div style="color:var(--text-secondary);font-size:0.88rem;">Rotate the molecular models by clicking and dragging. Press "Animate" to watch the bond formation live!</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- REACTIONS SECTION -->
+      <section class="section" id="reactions-section" aria-labelledby="reactions-heading">
+        <div class="section-header">
+          <div class="section-title fade-in" id="reactions-heading">Named Reactions</div>
+          <div class="section-sub fade-in">Click any card to explore its mechanism, 3D model, and condition effects.</div>
+        </div>
+
+        <!-- Search -->
+        <div class="search-wrap fade-in" role="search">
+          <span class="search-icon" aria-hidden="true">🔍</span>
+          <input type="text" id="search-input" placeholder="Search reactions, tags, or keywords…" aria-label="Search reactions" />
+          <button class="search-clear" id="search-clear" aria-label="Clear search" onclick="clearSearch()" style="display:none">✕</button>
+        </div>
+
+        <!-- Category Chips -->
+        <div class="filter-chips fade-in" role="group" aria-label="Filter by category">
+          <button class="chip" data-cat="organic">🔬 Organic</button>
+          <button class="chip" data-cat="addition">➕ Addition</button>
+          <button class="chip" data-cat="substitution">🔄 Substitution</button>
+          <button class="chip" data-cat="elimination">❌ Elimination</button>
+          <button class="chip" data-cat="condensation">💧 Condensation</button>
+          <button class="chip" data-cat="rearrangement">🔀 Rearrangement</button>
+          <button class="chip" data-cat="industrial">🏭 Industrial</button>
+        </div>
+
+        <!-- Result count and sort -->
+        <div class="reaction-counter-wrap">
+          <div class="result-count" id="result-count-badge">Showing <strong id="result-count-num">114</strong> reactions</div>
+          <div class="sort-wrap">
+            <label for="sort-select" class="sort-label">Sort:</label>
+            <select id="sort-select" class="sort-select" aria-label="Sort reactions" onchange="sortReactions(this.value)">
+              <option value="default">Default</option>
+              <option value="alpha">A → Z</option>
+              <option value="alpha-desc">Z → A</option>
+              <option value="year">Oldest First</option>
+              <option value="year-desc">Newest First</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Grid -->
+        <div class="reaction-grid" id="reaction-grid" role="list" aria-label="Reaction cards"></div>
+      </section>
+
+      <!-- ABOUT SECTION -->
+      <section class="section" id="about-section" aria-labelledby="about-heading">
+        <div class="section-header fade-in">
+          <div class="section-title" id="about-heading">About ReactLab</div>
+          <div class="section-sub">Built for students who want to learn chemistry beyond the textbook.</div>
+        </div>
+        <div class="about-grid">
+          <div class="glass-panel fade-in" style="margin:0">
+            <p style="color:var(--text-secondary);line-height:1.9;font-size:0.95rem;">
+              <strong style="color:var(--text-primary)">ReactLab</strong> is an interactive educational platform designed to help students understand the mechanistic principles behind classic named reactions in organic chemistry.
+              <br><br>
+              Each reaction page provides a <strong style="color:var(--accent-cyan)">detailed step-by-step mechanism</strong>, a <strong style="color:var(--accent-violet)">real-time 3D molecular viewer</strong> powered by Three.js, and an <strong style="color:var(--accent-green)">interactive conditions panel</strong> where you can adjust temperature, pressure, and concentration to see kinetic effects in practice.
+              <br><br>
+              Whether you're preparing for JEE, NEET, university finals, or just passionate about chemistry — ReactLab makes complex reactions intuitive and visual.
+            </p>
+          </div>
+          <div class="about-features-col">
+            <div class="about-feature-card fade-in">
+              <div class="about-feature-icon">🎓</div>
+              <div>
+                <div class="about-feature-title">JEE &amp; NEET Ready</div>
+                <div class="about-feature-desc">Covers reactions from all major competitive exam syllabuses with detailed mechanisms.</div>
+              </div>
+            </div>
+            <div class="about-feature-card fade-in">
+              <div class="about-feature-icon">🧬</div>
+              <div>
+                <div class="about-feature-title">Real-Time 3D Models</div>
+                <div class="about-feature-desc">Powered by Three.js: rotate, zoom, and watch bond animations in your browser.</div>
+              </div>
+            </div>
+            <div class="about-feature-card fade-in">
+              <div class="about-feature-icon">⚗</div>
+              <div>
+                <div class="about-feature-title">Condition Simulator</div>
+                <div class="about-feature-desc">Adjust temperature, pressure, and concentration to explore Le Chatelier's Principle live.</div>
+              </div>
+            </div>
+            <div class="about-feature-card fade-in">
+              <div class="about-feature-icon">📱</div>
+              <div>
+                <div class="about-feature-title">Mobile Friendly</div>
+                <div class="about-feature-desc">Fully responsive — study on your phone, tablet, or desktop with equal ease.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- QUOTE SECTION -->
+      <section class="section quote-section" id="quote-section">
+        <div class="quote-carousel" id="quote-carousel"></div>
+      </section>
+
+    </div>
+    <!-- END HOME PAGE -->
+
+    <!-- ==================== DETAIL PAGE ==================== -->
+    <div id="detail-page" class="hidden">
+      <div class="section">
+
+        <!-- Breadcrumb + Back/Share button -->
+        <div class="detail-topbar">
+          <button class="back-btn" id="back-btn" aria-label="Back to reactions list">← Back to All Reactions</button>
+          <div class="breadcrumb" aria-label="Breadcrumb navigation">
+            <span class="breadcrumb-item" onclick="showHome()" style="cursor:pointer">🏠 Home</span>
+            <span class="breadcrumb-sep">›</span>
+            <span class="breadcrumb-item breadcrumb-active" id="breadcrumb-name">Reaction</span>
+          </div>
+        </div>
+
+        <!-- DETAIL HEADER -->
+        <div class="detail-header">
+          <span class="card-category" id="detail-category-badge"></span>
+          <h1 id="detail-name"></h1>
+          <p id="detail-summary"></p>
+          <div class="detail-meta" id="detail-meta"></div>
+        </div>
+
+        <!-- Reaction Equation -->
+        <div class="reaction-equation" id="reaction-equation" role="region" aria-label="Reaction equation"></div>
+
+        <!-- Info Grid -->
+        <div class="info-grid">
+          <div class="info-box">
+            <div class="info-box-label">Discovered By</div>
+            <div class="info-box-value" id="info-discovered"></div>
+          </div>
+          <div class="info-box">
+            <div class="info-box-label">Reaction Type</div>
+            <div class="info-box-value" id="info-type"></div>
+          </div>
+          <div class="info-box">
+            <div class="info-box-label">Catalyst / Conditions</div>
+            <div class="info-box-value" id="info-catalyst"></div>
+          </div>
+          <div class="info-box">
+            <div class="info-box-label">Steps</div>
+            <div class="info-box-value" id="info-steps">Click steps below to explore</div>
+          </div>
+        </div>
+
+        <!-- Applications -->
+        <div class="glass-panel" id="applications-panel" style="margin-bottom:28px;">
+          <div class="panel-title"><span class="panel-title-icon">🏭</span> Real-World Applications</div>
+          <ul class="applications-list" id="applications-list" role="list" aria-label="Applications"></ul>
+        </div>
+
+        <!-- MAIN DETAIL GRID -->
+        <div class="detail-grid">
+
+          <!-- LEFT COLUMN: Mechanism + Conditions -->
+          <div>
+
+            <!-- Mechanism Steps -->
+            <div class="glass-panel">
+              <div class="panel-title"><span class="panel-title-icon">⚗</span> Mechanism Steps</div>
+              <ul class="mechanism-steps" id="mechanism-list" role="list" aria-label="Mechanism steps"></ul>
+            </div>
+
+            <!-- Conditions Panel -->
+            <div class="glass-panel">
+              <div class="panel-title"><span class="panel-title-icon">🌡</span> Reaction Conditions — Adjust &amp; Observe</div>
+              <div class="condition-controls">
+
+                <!-- Temperature -->
+                <div class="condition-row" id="row-temperature">
+                  <div class="cond-label">
+                    <span class="cond-name">🌡 Temperature</span>
+                    <span class="cond-value" id="val-temperature">25°C</span>
+                  </div>
+                  <input type="range" class="cond-slider" id="slider-temperature" min="0" max="100" value="50" aria-label="Temperature slider" />
+                  <div class="cond-effect effect-neutral" id="effect-temperature">Adjust the slider to see the effect.</div>
+                </div>
+
+                <!-- Pressure -->
+                <div class="condition-row" id="row-pressure">
+                  <div class="cond-label">
+                    <span class="cond-name">🔵 Pressure</span>
+                    <span class="cond-value" id="val-pressure">1.0 atm</span>
+                  </div>
+                  <input type="range" class="cond-slider" id="slider-pressure" min="0" max="100" value="50" aria-label="Pressure slider" />
+                  <div class="cond-effect effect-neutral" id="effect-pressure">Adjust the slider to see the effect.</div>
+                </div>
+
+                <!-- Concentration -->
+                <div class="condition-row" id="row-concentration">
+                  <div class="cond-label">
+                    <span class="cond-name">🧪 Concentration</span>
+                    <span class="cond-value" id="val-concentration">1.0x</span>
+                  </div>
+                  <input type="range" class="cond-slider" id="slider-concentration" min="0" max="100" value="50" aria-label="Concentration slider" />
+                  <div class="cond-effect effect-neutral" id="effect-concentration">Adjust the slider to see the effect.</div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <!-- RIGHT COLUMN: 3D Viewer -->
+          <div>
+            <div class="glass-panel" style="position:sticky;top:90px;">
+              <div class="panel-title"><span class="panel-title-icon">🔬</span> 3D Molecular Viewer</div>
+              <div id="viewer-canvas" style="width:100%;height:340px;border-radius:12px;overflow:hidden;" role="img" aria-label="3D molecular model viewer"></div>
+              <div class="viewer-hint">🖱 Drag to rotate · Scroll to zoom</div>
+              <div class="viewer-controls" style="margin-top:14px;">
+                <button class="viewer-btn active-btn" id="btn-reactants" aria-label="Show reactants">Reactants</button>
+                <button class="viewer-btn" id="btn-products" aria-label="Show products">Products</button>
+                <button class="viewer-btn" id="btn-animate" aria-label="Animate reaction">▶ Animate</button>
+              </div>
+              <div class="viewer-label">Colored by element: C=grey · O=red · N=blue · H=white · Br=orange</div>
+            </div>
+          </div>
+
+        </div>
+        <!-- end detail-grid -->
+
+        <!-- Fun Fact Panel -->
+        <div class="glass-panel fun-fact-panel" id="fun-fact-panel" style="margin-top:28px;">
+          <div class="panel-title"><span class="panel-title-icon">💡</span> Did You Know?</div>
+          <div class="fun-fact-content" id="fun-fact-content"></div>
+        </div>
+
+      </div>
+    </div>
+    <!-- END DETAIL PAGE -->
+
+    <!-- ==================== COMPARE PAGE ==================== -->
+    <div id="compare-page" class="hidden">
+      <div class="section">
+        <!-- Breadcrumb -->
+        <div class="detail-topbar">
+          <button class="back-btn" aria-label="Back to home" onclick="showHome()">← Back to Home</button>
+          <div class="breadcrumb" aria-label="Breadcrumb navigation">
+            <span class="breadcrumb-item" onclick="showHome()" style="cursor:pointer">🏠 Home</span>
+            <span class="breadcrumb-sep">›</span>
+            <span class="breadcrumb-item breadcrumb-active">Compare Reactions</span>
+          </div>
+        </div>
+        
+        <div class="detail-header">
+          <h1>Reaction Comparison</h1>
+          <p>Analyze two completely different named reactions side-by-side to understand the key differences in their conditions, mechanisms, and overall dynamics.</p>
+        </div>
+
+        <!-- Compare Layout -->
+        <div class="compare-grid" id="compare-grid" role="region" aria-label="Compare Reactions">
+          <!-- COLUMN 1 -->
+          <div class="compare-col slide-up-anim" id="compare-col-1">
+            <div class="glass-panel" style="margin-bottom:20px; padding:20px;">
+              <label class="sort-label" style="display:block; margin-bottom:8px;">Search & Select First Reaction:</label>
+              <input type="text" id="comp-search-1" class="sort-select" placeholder="Type to search..." style="width:100%; margin-bottom:10px; padding:10px;" oninput="if(window.filterCompareSelect) window.filterCompareSelect(1, this.value)" />
+              <select id="compare-select-1" class="sort-select" style="width:100%; padding:12px; font-size:1rem;" onchange="if(window.loadCompareSide) window.loadCompareSide(1, this.value)"></select>
+            </div>
+            <div class="glass-panel" style="padding:24px;">
+              <div class="panel-title"><span class="panel-title-icon">🔬</span> 3D Molecular Viewer</div>
+              <div id="compare-canvas-1" style="width:100%; height:260px; background:radial-gradient(ellipse at center, rgba(10,25,60,0.8) 0%, rgba(5,10,24,1) 100%); border-radius:12px; overflow:hidden; border:1px solid var(--border-glass); margin-bottom:12px;"></div>
+              <div class="viewer-hint" style="margin-bottom:0;">🖱 Drag to rotate · Scroll to zoom</div>
+            </div>
+            <div class="glass-panel" style="padding:24px;">
+              <div class="panel-title"><span class="panel-title-icon">📋</span> Reaction Details</div>
+              <div id="comp1-details">
+                <div class="compare-detail-row"><span class="compare-detail-label">Category</span><span class="compare-detail-value" id="comp1-category">-</span></div>
+                <div class="compare-detail-row"><span class="compare-detail-label">Discovered</span><span class="compare-detail-value" id="comp1-discovered">-</span></div>
+                <div class="compare-detail-row"><span class="compare-detail-label">Type</span><span class="compare-detail-value" id="comp1-type">-</span></div>
+                <div class="compare-detail-row"><span class="compare-detail-label">Catalyst</span><span class="compare-detail-value" id="comp1-catalyst">-</span></div>
+                <div class="compare-detail-row"><span class="compare-detail-label">Equation</span><span class="compare-detail-value" id="comp1-equation" style="color:var(--accent-cyan); font-family:'Fira Mono', monospace; font-size:0.82rem;">-</span></div>
+              </div>
+            </div>
+            <div class="glass-panel" style="padding:24px;">
+              <div class="panel-title"><span class="panel-title-icon">🏭</span> Applications</div>
+              <ul class="applications-list" id="comp1-applications"><li style="color:var(--text-muted); font-size:0.85rem;">Select a reaction</li></ul>
+            </div>
+            <div class="glass-panel" style="padding:24px;">
+              <div class="panel-title"><span class="panel-title-icon">⚗</span> Mechanism Steps</div>
+              <ul class="mechanism-steps" id="comp1-steps"></ul>
+            </div>
+          </div>
+
+          <!-- COLUMN 2 -->
+          <div class="compare-col slide-up-anim" id="compare-col-2" style="animation-delay:0.1s">
+            <div class="glass-panel" style="margin-bottom:20px; padding:20px;">
+              <label class="sort-label" style="display:block; margin-bottom:8px;">Search & Select Second Reaction:</label>
+              <input type="text" id="comp-search-2" class="sort-select" placeholder="Type to search..." style="width:100%; margin-bottom:10px; padding:10px;" oninput="if(window.filterCompareSelect) window.filterCompareSelect(2, this.value)" />
+              <select id="compare-select-2" class="sort-select" style="width:100%; padding:12px; font-size:1rem;" onchange="if(window.loadCompareSide) window.loadCompareSide(2, this.value)"></select>
+            </div>
+            <div class="glass-panel" style="padding:24px;">
+              <div class="panel-title"><span class="panel-title-icon">🔬</span> 3D Molecular Viewer</div>
+              <div id="compare-canvas-2" style="width:100%; height:260px; background:radial-gradient(ellipse at center, rgba(10,25,60,0.8) 0%, rgba(5,10,24,1) 100%); border-radius:12px; overflow:hidden; border:1px solid var(--border-glass); margin-bottom:12px;"></div>
+              <div class="viewer-hint" style="margin-bottom:0;">🖱 Drag to rotate · Scroll to zoom</div>
+            </div>
+            <div class="glass-panel" style="padding:24px;">
+              <div class="panel-title"><span class="panel-title-icon">📋</span> Reaction Details</div>
+              <div id="comp2-details">
+                <div class="compare-detail-row"><span class="compare-detail-label">Category</span><span class="compare-detail-value" id="comp2-category">-</span></div>
+                <div class="compare-detail-row"><span class="compare-detail-label">Discovered</span><span class="compare-detail-value" id="comp2-discovered">-</span></div>
+                <div class="compare-detail-row"><span class="compare-detail-label">Type</span><span class="compare-detail-value" id="comp2-type">-</span></div>
+                <div class="compare-detail-row"><span class="compare-detail-label">Catalyst</span><span class="compare-detail-value" id="comp2-catalyst">-</span></div>
+                <div class="compare-detail-row"><span class="compare-detail-label">Equation</span><span class="compare-detail-value" id="comp2-equation" style="color:var(--accent-cyan); font-family:'Fira Mono', monospace; font-size:0.82rem;">-</span></div>
+              </div>
+            </div>
+            <div class="glass-panel" style="padding:24px;">
+              <div class="panel-title"><span class="panel-title-icon">🏭</span> Applications</div>
+              <ul class="applications-list" id="comp2-applications"><li style="color:var(--text-muted); font-size:0.85rem;">Select a reaction</li></ul>
+            </div>
+            <div class="glass-panel" style="padding:24px;">
+              <div class="panel-title"><span class="panel-title-icon">⚗</span> Mechanism Steps</div>
+              <ul class="mechanism-steps" id="comp2-steps"></ul>
+            </div>
+          </div>
+        </div>
+        
+        <div class="compare-differences glass-panel slide-up-anim" style="margin-top:24px; padding:24px; animation-delay:0.2s;">
+          <div class="panel-title" style="margin-bottom:16px;"><span class="panel-title-icon">⚖️</span> Comprehensive Comparison Analysis</div>
+          <div id="compare-analysis">
+            <div style="color:var(--text-muted);">Select two reactions above to see a detailed educational comparison.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <!-- END COMPARE PAGE -->
+
+    <!-- FOOTER -->
+    <footer>
+      <div class="footer-logo">⚗ ReactLab</div>
+      <div class="footer-tagline">Interactive Named Reactions Explorer — Built for Chemistry Students</div>
+      <div class="footer-links">
+        <a href="#" onclick="showHome(); return false;">Reactions</a>
+        <a href="#about-section">About</a>
+        <a href="#how-to-use">How To Use</a>
+      </div>
+      <div class="footer-divider"></div>
+      <div class="footer-stats">
+        <div>
+          <div class="footer-stat-num">114+</div>
+          <div class="footer-stat-label">Named Reactions</div>
+        </div>
+        <div>
+          <div class="footer-stat-num">7</div>
+          <div class="footer-stat-label">Categories</div>
+        </div>
+        <div>
+          <div class="footer-stat-num">3D</div>
+          <div class="footer-stat-label">Molecular Viewer</div>
+        </div>
+        <div>
+          <div class="footer-stat-num">Free</div>
+          <div class="footer-stat-label">Always</div>
+        </div>
+      </div>
+      <div class="footer-divider"></div>
+      <div class="footer-copy">© 2026 <strong>ReactLab</strong> · Powered by Three.js · JEE · NEET · University Finals</div>
+    </footer>
+
+  </div>
+  <!-- end site-wrapper -->
+
+  <!-- Scroll to top button -->
+  <button class="scroll-top" id="scroll-top-btn" aria-label="Scroll to top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Back to top">↑</button>
+
+  <!-- Toast notification -->
+  <div class="toast-container" id="toast-container" aria-live="polite"></div>
+
+  <!-- Scripts -->
+  <script src="js/data.js"></script>
+  <script src="js/viewer3d.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+</html>
